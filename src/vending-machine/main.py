@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from google.cloud import resourcemanager_v3
 import googleProvider
 
 class Data(BaseModel):
@@ -9,19 +10,33 @@ class Data(BaseModel):
 
 app = FastAPI()
 
+projects = {}
+
 @app.get("/")
 def root():
-    return {"message": "Hello"}
+    return {"message": "GOOOOD Afternoon Rick"}
 
 @app.post("/new_project")
 def create_project(data: Data):
-    googleProvider.create_project(
+    result = googleProvider.create_project(
         project_id=data.project_id, 
         parent_id=data.parent_id
         )
     
+    print(result)
+    if result.state == resourcemanager_v3.Project.State.ACTIVE:
+        projects[f"{data.project_id}"] = resourcemanager_v3.Project.State.ACTIVE
+    
+    print(projects)
+    
 @app.post("/delete_project")
 def delete_project(data: Data):
-    googleProvider.delete_project(
-        project_name=data.project_name
+    result = googleProvider.delete_project(
+        project_name=f"projects/{data.project_id}"
         )
+    
+    print(result)
+    if result.state == resourcemanager_v3.Project.State.DELETE_REQUESTED:
+        projects[f"{data.project_id}"] = resourcemanager_v3.Project.State.DELETE_REQUESTED
+
+    print(projects)

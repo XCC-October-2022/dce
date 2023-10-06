@@ -1,4 +1,3 @@
-
 from google.cloud import resourcemanager_v3
 from google.oauth2 import service_account
 
@@ -16,6 +15,8 @@ def create_project(project_id: str, parent_id: str):
     operation = client.create_project(request=create_project_request)
     print(f"Created project: {operation.result()}")
 
+    return operation.result()
+
 
 def delete_project(project_name: str):
 
@@ -26,6 +27,8 @@ def delete_project(project_name: str):
 
     operation = client.delete_project(request=delete_project_request)
     print(f"Deleted project: {operation.result()}")
+
+    return operation.result()
 
 
 if __name__ == '__main__':
