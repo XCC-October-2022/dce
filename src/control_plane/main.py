@@ -1,8 +1,8 @@
+from common.models.database import DatabaseProviderRequest
 from common.models.project import ProjectState
-from common.models.provider import ProviderProjectRequest
+from common.models.provider import Provider, ProviderProjectRequest
 from control_plane.models.database import DatabaseBackend
 from fastapi import FastAPI
-
 
 db = DatabaseBackend()
 app = FastAPI()
@@ -14,13 +14,17 @@ def root():
 
 
 @app.post("/backend/register_provider")
-def register_provider():
-    ...
+def register_provider(data: dict):
+    req = DatabaseProviderRequest(**data)
+    res = db.register_provider(req)
+    print(res)
 
 
-@app.post("/backend/deregsiter_provider")
-def deregister_provider():
-    ...
+@app.post("/backend/deregister_provider")
+def deregister_provider(data: dict):
+    req = DatabaseProviderRequest(**data)
+    res = db.deregister_provider(req)
+    print(res)
 
 
 @app.get("/list_providers")

@@ -5,10 +5,11 @@ from providers.google.backend import GCPProvider
 from google.cloud import resourcemanager_v3
 
 app = FastAPI()
-backend = GCPProvider()
+backend = GCPProvider(control_plane_url='http://localhost:8000',
+                      backend_url='http://localhost:8002')
 
 
-@app.post("create_project")
+@app.post("/create_project")
 def create_project(provider_request: dict):
     if 'parent_id' not in provider_request or 'project_id' not in provider_request:
         return ProviderProjectResponse(project=None, state=ProjectState.ERROR)
@@ -27,7 +28,7 @@ def create_project(provider_request: dict):
     return ProviderProjectResponse(project=project, state=ProjectState.ACTIVE)
 
 
-@app.post("delete_project")
+@app.post("/delete_project")
 def delete_project(provider_request: dict):
     if 'project_name' not in provider_request:
         return ProviderProjectResponse(project=None, state=ProjectState.ERROR)
