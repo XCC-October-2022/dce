@@ -12,3 +12,6 @@ class Project(BaseModel):
     project_id: str | None = None
     project_name: str | None = None
     parent_id: str | None = None
+
+    def __hash__(self) -> int:
+        return self.project_id.__hash__()

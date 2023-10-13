@@ -14,7 +14,7 @@ def root():
 
 
 @app.post("/backend/register_provider")
-def register_provdier():
+def register_provider():
     ...
 
 

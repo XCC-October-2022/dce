@@ -1,5 +1,5 @@
 from enum import Enum
-from common.models.project import ProjectState
+from common.models.project import Project, ProjectState
 from pydantic import BaseModel
 
 
@@ -15,7 +15,7 @@ class ProviderProjectRequest(BaseModel):
 
 
 class ProviderProjectResponse(BaseModel):
-    project: dict
+    project: Project | None = None
     state: ProjectState
 
 

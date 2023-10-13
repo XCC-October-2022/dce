@@ -30,12 +30,3 @@ class GCPProvider():
         print(f"Deleted project: {operation.result()}")
 
         return operation.result()
-
-
-if __name__ == '__main__':
-    project_id = "my-medium-project-id"
-    project_name = "projects/my-medium-project-id"
-    parent_id = "folders/926442729531"
-
-    create_project(project_id, parent_id)
-    delete_project(project_name)

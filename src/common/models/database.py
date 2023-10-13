@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class DatabaseProviderRequest(BaseModel):
-    provider: dict
+    provider: Provider
 
 
 class DatabaseProviderResponse(BaseModel):
@@ -13,7 +13,7 @@ class DatabaseProviderResponse(BaseModel):
 
 
 class DatabaseProjectRequest(BaseModel):
-    project: dict
+    project: Project
 
 
 class DatabaseProjectResponse(BaseModel):
