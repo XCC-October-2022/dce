@@ -1,10 +1,10 @@
+from common.models.project import ProjectState
+from common.models.provider import ProviderProjectRequest
+from control_plane.models.database import DatabaseBackend
 from fastapi import FastAPI
 
-from vending_machine.control_plane.models.database import Database
-from vending_machine.control_plane.models.project import ProjectState
-from vending_machine.control_plane.models.provider import ProviderProjectRequest
 
-db = Database()
+db = DatabaseBackend()
 app = FastAPI()
 
 
