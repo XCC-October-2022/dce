@@ -1,5 +1,7 @@
-from common.models.project import Project
-from common.models.provider import Provider
+from typing import List
+from common.models.database import DatabaseProjectResponse, DatabaseProviderListResponse, DatabaseProviderResponse
+from common.models.project import Project, ProjectState
+from common.models.provider import Provider, ProviderState
 from fastapi import FastAPI
 import redis
 import json
@@ -22,28 +24,33 @@ def project_list():
 @app.post("/project/add")
 def project_add(data: dict):
     project = Project(**data)
-    db.hset("PROJECTS", project.__hash__(), project.model_dump_json())
+    db.hset("PROJECTS", project.tag, project.model_dump_json())
+    return DatabaseProjectResponse(project=project,state=ProjectState.ACTIVE)
 
 
 @app.post("/project/remove")
 def project_remove(data: dict):
     project = Project(**data)
-    db.hdel("PROJECTS", project.__hash__())
+    print(project)
+    db.hdel("PROJECTS", project.tag)
+    return DatabaseProjectResponse(project=project,state=ProjectState.DELETED)
 
 
 @app.get("/provider/list")
 def provider_list():
-    return [Provider(**json.loads(provider)) for provider in db.hvals("PROVIDERS")]
+    return DatabaseProviderListResponse(provider_list=[Provider(**json.loads(provider)) for provider in db.hvals("PROVIDERS")])
 
 
 @app.post("/provider/add")
 def provider_add(data: dict):
     provider = Provider(**data)
     print(provider)
-    db.hset("PROVIDERS", provider.__hash__(), provider.model_dump_json())
+    res = db.hset("PROVIDERS", provider.name, provider.model_dump_json()) #TODO Check db possible errors
+    return DatabaseProviderResponse(provider=provider, state=ProviderState.REGISTERED)
 
 
 @app.post("/provider/remove")
 def provider_remove(data: dict):
     provider = Provider(**data)
-    db.hdel("PROVIDERS", provider.__hash__())
+    res = db.hdel("PROVIDERS", provider.name)
+    return DatabaseProviderResponse(provider=provider, state=ProviderState.UNREGISTERED)

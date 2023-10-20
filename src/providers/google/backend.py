@@ -13,8 +13,16 @@ class GCPProvider():
 
         requests.post(f'{control_plane_url}/backend/register_provider',
                       json=DatabaseProviderRequest(provider=provider).model_dump())
+           
+    @staticmethod
+    def exit(control_plane_url: str):
+        provider = Provider(name='GCP')
 
-    def create_project(project_id: str, parent_id: str):
+        requests.post(f'{control_plane_url}/backend/deregister_provider',
+                      json=DatabaseProviderRequest(provider=provider).model_dump())
+
+    def create_project(self, project_id: str, parent_id: str):
+        print(project_id, parent_id)
 
         credentials = service_account.Credentials.from_service_account_file(
             'credentials.json')
@@ -25,12 +33,13 @@ class GCPProvider():
             "parent": parent_id,
         })
 
+        print(f"Attempt to create project: {create_project_request}")
         operation = client.create_project(request=create_project_request)
         print(f"Created project: {operation.result()}")
 
         return operation.result()
 
-    def delete_project(project_name: str):
+    def delete_project(self, project_name: str):
 
         credentials = service_account.Credentials.from_service_account_file(
             'credentials.json')
@@ -39,6 +48,7 @@ class GCPProvider():
         delete_project_request = resourcemanager_v3.DeleteProjectRequest(
             name=f"{project_name}")
 
+        print(f"Attempt to delete project: {delete_project_request}")
         operation = client.delete_project(request=delete_project_request)
         print(f"Deleted project: {operation.result()}")
 

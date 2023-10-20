@@ -1,8 +1,9 @@
 from common.models.database import DatabaseProviderRequest
 from common.models.project import ProjectState
 from common.models.provider import Provider, ProviderProjectRequest
-from control_plane.models.database import DatabaseBackend
-from fastapi import FastAPI
+from control_plane.backends.database import DatabaseBackend
+from control_plane.backends.provider import ProviderBackend
+from fastapi import FastAPI, Response
 
 db = DatabaseBackend()
 app = FastAPI()
@@ -15,6 +16,7 @@ def root():
 
 @app.post("/backend/register_provider")
 def register_provider(data: dict):
+    print(data)
     req = DatabaseProviderRequest(**data)
     res = db.register_provider(req)
     print(res)
@@ -22,6 +24,7 @@ def register_provider(data: dict):
 
 @app.post("/backend/deregister_provider")
 def deregister_provider(data: dict):
+    print(data)
     req = DatabaseProviderRequest(**data)
     res = db.deregister_provider(req)
     print(res)
@@ -38,27 +41,47 @@ def list_projects():
 
 
 @app.post("/create_project")
-def create_project(data: ProviderProjectRequest):
-    provider = db.get_provider_by_name(data.provider_name)
+def create_project(data: dict):
+    print(data)
+    req = ProviderProjectRequest(**data)
 
-    result = provider.create_project(data.provider_request)
+    #TODO input validation
 
-    print(result)
+    provider: Provider = db.get_provider_by_name(req.provider_name)
+    #print(provider)
+
+    if not provider:
+        raise Exception(f"Provider not registered with name {req.provider_name}") 
+
+    backend = ProviderBackend(provider=provider)
+    result = backend.create_project(data=req)
+
+    #print(result)
     if result.state == ProjectState.ACTIVE:
-        res = db.store_project(result.project)
-        print(res)
+        res = db.store_project(result)
+        #print(res)
 
 
 @app.post("/delete_project")
-def delete_project(data: ProviderProjectRequest):
-    provider = db.get_provider_by_name(data.provider_name)
+def delete_project(data: dict):
+    print(data)
+    req = ProviderProjectRequest(**data)
 
-    result = provider.delete_project(data.provider_request)
+    #TODO input validation
 
-    print(result)
+    provider = db.get_provider_by_name(req.provider_name)
+    #print(provider)
+
+    if not provider:
+        return Response(status_code=204)
+
+    backend = ProviderBackend(provider=provider)
+    result = backend.delete_project(data=req)
+
+    #print(result)
     if result.state == ProjectState.DELETED:
-        res = db.remove_project(result.project)
-        print(res)
+        res = db.remove_project(result)
+        #print(res)
 
 # @app.post("/azure/new_project")
 # def create_project(data: Data):

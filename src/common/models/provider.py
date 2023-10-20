@@ -21,8 +21,5 @@ class ProviderProjectResponse(BaseModel):
 
 class Provider(BaseModel):
     name: str
-    create_url: str
-    delete_url: str
-
-    def __hash__(self) -> int:
-        return self.name.__hash__()
+    create_url: str | None = None
+    delete_url: str | None = None

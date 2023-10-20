@@ -3,16 +3,29 @@ from common.models.provider import ProviderProjectResponse
 from fastapi import FastAPI
 from providers.google.backend import GCPProvider
 from google.cloud import resourcemanager_v3
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    print("Deregistering provider")
+    GCPProvider.exit(control_plane_url='http://localhost:8000')
+    print("Exiting...")
+
+app = FastAPI(lifespan=lifespan)
 backend = GCPProvider(control_plane_url='http://localhost:8000',
                       backend_url='http://localhost:8002')
 
 
 @app.post("/create_project")
 def create_project(provider_request: dict):
+    print(provider_request)
+
     if 'parent_id' not in provider_request or 'project_id' not in provider_request:
         return ProviderProjectResponse(project=None, state=ProjectState.ERROR)
+
+    print(provider_request['parent_id'])
+    print(provider_request['project_id'])
 
     result = backend.create_project(
         parent_id=provider_request['parent_id'],
@@ -30,6 +43,8 @@ def create_project(provider_request: dict):
 
 @app.post("/delete_project")
 def delete_project(provider_request: dict):
+    print(provider_request)
+
     if 'project_name' not in provider_request:
         return ProviderProjectResponse(project=None, state=ProjectState.ERROR)
 
