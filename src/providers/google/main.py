@@ -1,3 +1,4 @@
+from providers.google.config import CONTROL_PLANE_HOSTNAME,BACKEND_HOSTNAME
 from common.models.project import Project, ProjectState
 from common.models.provider import ProviderProjectResponse
 from fastapi import FastAPI
@@ -9,12 +10,14 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
     print("Deregistering provider")
-    GCPProvider.exit(control_plane_url='http://localhost:8000')
+    
+    GCPProvider.exit(control_plane_url=f'http://{CONTROL_PLANE_HOSTNAME}:8000')
     print("Exiting...")
 
+
 app = FastAPI(lifespan=lifespan)
-backend = GCPProvider(control_plane_url='http://localhost:8000',
-                      backend_url='http://localhost:8002')
+backend = GCPProvider(control_plane_url=f'http://{CONTROL_PLANE_HOSTNAME}:8000',
+                      backend_url=f'http://{BACKEND_HOSTNAME}:8002')
 
 
 @app.post("/create_project")

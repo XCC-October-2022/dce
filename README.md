@@ -28,7 +28,7 @@
  2032  http localhost:8000/delete_project provider_name=GCP provider_request[project_name]=projects/782301261586
  2033  http localhost:8001/project/list
  2034  http localhost:8001/provider/list
- 2035  http localhost:8000/create_project provider_name=GCP provider_request[project_id]=test-id-63 provider_request[parent_id]=folders/926442729531
+ 2035  http --form POST localhost:8000/create_project provider_name=GCP provider_request[project_id]=test-id-63 provider_request[parent_id]=folders/926442729531
  2036  http localhost:8001/provider/list
  2037  http localhost:8001/project/list
  2038  http localhost:8000/delete_project provider_name=GCP provider_request[project_name]=projects/1037409640267

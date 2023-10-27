@@ -1,10 +1,11 @@
 from common.models.database import Database, DatabaseProjectRequest, DatabaseProjectResponse, DatabaseProviderListResponse, DatabaseProviderRequest, DatabaseProviderResponse
 from common.models.provider import Provider
 import requests
+from control_plane.config import DATABASE_HOSTNAME
 
 
 class DatabaseBackend():
-    def __init__(self, database=Database(db_connection="http://127.0.0.1:8001")):
+    def __init__(self, database=Database(db_connection=f"http://{DATABASE_HOSTNAME}:8001")):
         self.database = database
 
     def get_provider_by_name(self, name: str) -> Provider | None:

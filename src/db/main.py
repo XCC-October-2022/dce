@@ -5,9 +5,10 @@ from common.models.provider import Provider, ProviderState
 from fastapi import FastAPI
 import redis
 import json
+from src.db.config import REDIS_HOSTNAME
 
 app = FastAPI()
-db = redis.Redis()
+db = redis.Redis(host=REDIS_HOSTNAME)
 
 
 @app.get("/")
